@@ -33,68 +33,83 @@ function getValidChoice(message, validChoices) {
 function holdingChamber() {
   console.log("Entered Holding Chamber.");
 
-  const choice = getValidChoice(
-    "HOLDING CHAMBER\n\n" +
-      "1. Visit Server Room\n" +
-      "2. Visit Control Room\n" +
-      "3. Visit Escape Gate",
-    ["1", "2", "3"],
-  );
+  while (true) {
+    const choice = getValidChoice(
+      "HOLDING CHAMBER\n\n" +
+        "The emergency lights flicker overhead. " +
+        "A terminal glows beside a locked door.\n\n" +
+        "What would you like to do?\n" +
+        "1. Search the room\n" +
+        "2. Inspect the terminal\n" +
+        "3. Travel to another room",
+      ["1", "2", "3"],
+    );
 
-  if (choice === null) return null;
-  if (choice === "1") return "server";
-  if (choice === "2") return "control";
-  return "escape";
+    if (choice === null) {
+      return null;
+    }
+
+    if (choice === "1") {
+      if (!gameState.hasAccessCard) {
+        gameState.hasAccessCard = true;
+
+        alert(
+          "You move a loose floor panel and discover " +
+            "an access card hidden underneath it.\n\n" +
+            "ACCESS CARD ACQUIRED.",
+        );
+
+        console.log("Player collected the access card.");
+      } else {
+        alert(
+          "You search beneath the floor panel again, " +
+            "but the compartment is empty.\n\n" +
+            "You already collected the access card.",
+        );
+
+        console.log("Access card already collected.");
+      }
+    } else if (choice === "2") {
+      alert(
+        "TERMINAL MESSAGE\n\n" +
+          "FACILITY LOCKDOWN ACTIVE.\n\n" +
+          "The exit requires an authorized access card " +
+          "and a security override.\n\n" +
+          "The central security network controls the " +
+          "facility's lockdown system. Investigate the " +
+          "Server Room and Control Room for more information.",
+      );
+
+      console.log("Player inspected the holding chamber terminal.");
+    } else if (choice === "3") {
+      const destination = getValidChoice(
+        "Where would you like to go?\n\n" +
+          "1. Server Room\n" +
+          "2. Control Room\n" +
+          "3. Escape Gate",
+        ["1", "2", "3"],
+      );
+
+      if (destination === null) {
+        return null;
+      }
+
+      if (destination === "1") {
+        return "server";
+      } else if (destination === "2") {
+        return "control";
+      } else {
+        return "escape";
+      }
+    }
+  }
 }
 
-function serverRoom() {
-  console.log("Entered Server Room.");
+function serverRoom() {}
 
-  const choice = getValidChoice(
-    "SERVER ROOM\n\n" +
-      "1. Return to Holding Chamber\n" +
-      "2. Visit Control Room\n" +
-      "3. Visit Escape Gate",
-    ["1", "2", "3"],
-  );
+function controlRoom() {}
 
-  if (choice === null) return null;
-  if (choice === "1") return "holding";
-  if (choice === "2") return "control";
-  return "escape";
-}
-
-function controlRoom() {
-  console.log("Entered Control Room.");
-
-  const choice = getValidChoice(
-    "CONTROL ROOM\n\n" +
-      "1. Return to Holding Chamber\n" +
-      "2. Visit Server Room\n" +
-      "3. Visit Escape Gate",
-    ["1", "2", "3"],
-  );
-
-  if (choice === null) return null;
-  if (choice === "1") return "holding";
-  if (choice === "2") return "server";
-  return "escape";
-}
-
-function escapeGate() {
-  console.log("Entered Escape Gate.");
-
-  const choice = getValidChoice(
-    "ESCAPE GATE\n\n" +
-      "1. Return to Control Room\n" +
-      "2. Return to Holding Chamber",
-    ["1", "2"],
-  );
-
-  if (choice === null) return null;
-  if (choice === "1") return "control";
-  return "holding";
-}
+function escapeGate() {}
 
 function game() {
   const startGame = confirm(
