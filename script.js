@@ -1,6 +1,7 @@
 const gameState = {
   currentRoom: "holding",
   hasAccessCard: false,
+  diagnosticsInspected: false,
   securityDisabled: false,
   logsRead: false,
   overridePrepared: false,
@@ -105,7 +106,109 @@ function holdingChamber() {
   }
 }
 
-function serverRoom() {}
+function serverRoom() {
+  console.log("Entered Server Room.");
+
+  while (true) {
+    const choice = getValidChoice(
+      "SERVER ROOM\n\n" +
+        "Rows of server racks hum in the darkness. " +
+        "A warning flashes across the main console:\n\n" +
+        "SECURITY NETWORK: ACTIVE\n\n" +
+        "What would you like to do?\n" +
+        "1. Inspect server diagnostics\n" +
+        "2. Disable security network\n" +
+        "3. Travel to another room",
+      ["1", "2", "3"],
+    );
+
+    if (choice === null) {
+      return null;
+    }
+
+    if (choice === "1") {
+      if (!gameState.securityDisabled) {
+        gameState.diagnosticsInspected = true;
+
+        alert(
+          "SERVER DIAGNOSTICS\n\n" +
+            "You examine the security network's control panel.\n\n" +
+            "DIAGNOSTIC REPORT:\n" +
+            "The network can be disabled manually, but doing " +
+            "so without checking the system first may alert ROGUE.\n\n" +
+            "RECOMMENDATION: Review diagnostics before " +
+            "disabling the network.",
+        );
+
+        console.log("Player inspected server diagnostics.");
+      } else {
+        alert(
+          "The diagnostics confirm that the security " +
+            "network is already offline.",
+        );
+      }
+    } else if (choice === "2") {
+      if (gameState.securityDisabled) {
+        alert(
+          "The security network is already disabled. " +
+            "There is nothing more to do here.",
+        );
+      } else {
+        gameState.securityDisabled = true;
+
+        if (gameState.diagnosticsInspected) {
+          alert(
+            "You follow the diagnostic procedure and " +
+              "carefully shut down the security network.\n\n" +
+              "SECURITY NETWORK: OFFLINE\n\n" +
+              "The shutdown succeeds without alerting ROGUE.",
+          );
+
+          console.log(
+            "Security disabled successfully. " + "AI alert level unchanged.",
+          );
+        } else {
+          gameState.aiAlertLevel += 1;
+
+          alert(
+            "You force the security network offline.\n\n" +
+              "SECURITY NETWORK: OFFLINE\n\n" +
+              "Suddenly, warning lights flash across the room.\n" +
+              'ROGUE: "Unauthorized system interference detected."\n\n' +
+              "Your actions have attracted the AI's attention.",
+          );
+
+          console.log(
+            "Security disabled without checking diagnostics. " +
+              "AI alert level increased to " +
+              gameState.aiAlertLevel +
+              ".",
+          );
+        }
+      }
+    } else if (choice === "3") {
+      const destination = getValidChoice(
+        "Where would you like to go?\n\n" +
+          "1. Holding Chamber\n" +
+          "2. Control Room\n" +
+          "3. Escape Gate",
+        ["1", "2", "3"],
+      );
+
+      if (destination === null) {
+        return null;
+      }
+
+      if (destination === "1") {
+        return "holding";
+      } else if (destination === "2") {
+        return "control";
+      } else {
+        return "escape";
+      }
+    }
+  }
+}
 
 function controlRoom() {}
 
