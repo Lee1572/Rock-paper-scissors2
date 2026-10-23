@@ -1,6 +1,7 @@
 const gameState = {
   currentRoom: "holding",
   hasAccessCard: false,
+  diagnosticsInspected: false,
   securityDisabled: false,
   logsRead: false,
   overridePrepared: false,
