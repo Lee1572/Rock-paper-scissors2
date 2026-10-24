@@ -9,6 +9,17 @@ const gameState = {
   gameEnded: false,
 };
 
+function resetGame() {
+  gameState.currentRoom = "holding";
+  gameState.hasAccessCard = false;
+  gameState.diagnosticsInspected = false;
+  gameState.securityDisabled = false;
+  gameState.logsRead = false;
+  gameState.overridePrepared = false;
+  gameState.aiAlertLevel = 0;
+  gameState.gameEnded = false;
+}
+
 function normalizeChoice(input) {
   return input.trim().toLowerCase();
 }
@@ -109,8 +120,6 @@ function holdingChamber() {
 function serverRoom() {
   console.log("Entered Server Room.");
 
-  let diagnosticsInspected = false;
-
   while (true) {
     const choice = getValidChoice(
       "SERVER ROOM\n\n" +
@@ -128,7 +137,7 @@ function serverRoom() {
     }
 
     if (choice === "1") {
-      diagnosticsInspected = true;
+      gameState.diagnosticsInspected = true;
 
       alert(
         "SERVER DIAGNOSTICS\n\n" +
@@ -148,7 +157,7 @@ function serverRoom() {
       } else {
         gameState.securityDisabled = true;
 
-        if (!diagnosticsInspected) {
+        if (!gameState.diagnosticsInspected) {
           gameState.aiAlertLevel += 1;
 
           alert(
@@ -315,7 +324,8 @@ function escapeGate() {
       const canEscape =
         gameState.hasAccessCard &&
         gameState.securityDisabled &&
-        gameState.overridePrepared;
+        gameState.overridePrepared &&
+        gameState.aiAlertLevel === 0;
 
       if (canEscape) {
         alert(
@@ -367,55 +377,74 @@ function game() {
       "Read alerts carefully for clues.\n" +
       "Your decisions will affect what happens later.\n" +
       "You can revisit rooms, but your progress will persist.\n\n" +
-      "Press Cancel in a prompt to end the game.",
+      "Press Cancel in a prompt to end the game.\n\n" +
+      "ABOUT THE CONSOLE\n" +
+      "This game logs your actions to the browser console.\n" +
+      "To open it, press F12 (or Ctrl+Shift+J on Windows/Linux, " +
+      "Cmd+Option+J on Mac) and click the Console tab.",
   );
 
   console.log("ROGUE AI: Escape Protocol started.");
 
-  while (!gameState.gameEnded) {
-    let nextRoom;
+  let playAgain = true;
 
-    switch (gameState.currentRoom) {
-      case "holding":
-        nextRoom = holdingChamber();
+  while (playAgain) {
+    resetGame();
+    let quit = false;
+
+    while (!gameState.gameEnded) {
+      let nextRoom;
+
+      switch (gameState.currentRoom) {
+        case "holding":
+          nextRoom = holdingChamber();
+          break;
+
+        case "server":
+          nextRoom = serverRoom();
+          break;
+
+        case "control":
+          nextRoom = controlRoom();
+          break;
+
+        case "escape":
+          nextRoom = escapeGate();
+          break;
+
+        default:
+          console.error("Unknown room:", gameState.currentRoom);
+          gameState.gameEnded = true;
+          break;
+      }
+
+      if (gameState.gameEnded) {
         break;
+      }
 
-      case "server":
-        nextRoom = serverRoom();
-        break;
-
-      case "control":
-        nextRoom = controlRoom();
-        break;
-
-      case "escape":
-        nextRoom = escapeGate();
-        break;
-
-      default:
-        console.error("Unknown room:", gameState.currentRoom);
+      if (nextRoom === null) {
+        alert("Game ended. Thanks for playing!");
+        quit = true;
         gameState.gameEnded = true;
         break;
+      }
+
+      const validRooms = ["holding", "server", "control", "escape"];
+
+      if (!validRooms.includes(nextRoom)) {
+        console.error("Invalid room destination:", nextRoom);
+        gameState.gameEnded = true;
+        break;
+      }
+
+      gameState.currentRoom = nextRoom;
     }
 
-    if (gameState.gameEnded) {
+    if (quit) {
       break;
     }
 
-    if (nextRoom === null) {
-      gameState.gameEnded = true;
-      break;
-    }
-
-    const validRooms = ["holding", "server", "control", "escape"];
-
-    if (!validRooms.includes(nextRoom)) {
-      console.error("Invalid room destination:", nextRoom);
-      gameState.gameEnded = true;
-      break;
-    }
-
-    gameState.currentRoom = nextRoom;
+    playAgain = confirm("Would you like to play again?");
   }
 
   console.log("Game session ended.");
