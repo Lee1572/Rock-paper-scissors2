@@ -384,6 +384,23 @@ function game() {
       "Cmd+Option+J on Mac) and click the Console tab.",
   );
 
+  
+alert(
+  "MISSION BRIEFING: ESCAPE PROTOCOL\n\n" +
+  "ROGUE has locked you inside its digital fortress.\n\n" +
+  "Escaping requires completing a series of security objectives.\n" +
+  "You cannot simply walk through the exit.\n\n" +
+  "YOUR OBJECTIVES:\n\n" +
+  "1. Find an access card in the Holding Chamber.\n" +
+  "2. Disable the security network in the Server Room.\n" +
+  "3. Investigate the security logs in the Control Room.\n" +
+  "4. Prepare the exit override in the Control Room.\n" +
+  "5. Proceed to the Escape Gate and attempt your escape.\n\n" +
+  "IMPORTANT: Some actions depend on earlier discoveries.\n" +
+  "Explore carefully and complete the objectives before escaping."
+);
+
+
   console.log("ROGUE AI: Escape Protocol started.");
 
   let playAgain = true;
